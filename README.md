@@ -28,6 +28,14 @@ Expressions can have multiple elements, separated by a dot. Each of the elements
 
 If the expression has more then one expression, the type of the first element is used to determine the type of the expression. It is then constructed with the first element or the result of the previous pass if it has happened already and the last element, which was not yet used in previous passes. This is repeated until all elements are used.
 
+### Functions and methods
+
+Methods and functions can be called by following the function or method name by brackets, within which the arguments are specified. If the argument if of a different type than it should be, it is converted. If an argument is missing, it is constructed with no arguments being passed to the constructor.
+
+If a function or method is called outside of an expression it must be followed by do, as any other instruction.
+
+Methods cannot be called in expressions.
+
 ### Defined Types
 
 A type definition is started with the character, which the type is bound followed by the type body split by a dolar sign.
