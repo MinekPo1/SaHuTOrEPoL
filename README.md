@@ -69,14 +69,14 @@ Members:
 |:----:|:-----------
 |`f__i`|Takes no arguments. Returns a function taking one argument of type `m` and calling it with the integer inverted as argument.
 
-### `f` - Float
+### `n` - Number
 
-Behaviour with two arguments: Convert the two inputs to floats and add the results
+Behaviour with two arguments: Convert the two inputs to numbers and add the results
 
 Members:
 | Name | Description
 |:----:|:-
-|`f__i`|Takes no arguments. Returns a function taking one argument: callbacks method. The callback method is called with the float inverted as argument.
+|`f__i`|Takes no arguments. Returns a function taking one argument: callbacks method. The callback method is called with the number inverted as argument.
 
 ### `b` - Boolean
 
