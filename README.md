@@ -118,7 +118,7 @@ Behaviour with two arguments: Create a tree with the first argument as the root 
 Members:
 | Name | Description
 |:----:|:-
-|`f__v`|Takes no arguments. Returns a function taking in a callback method which is called with the value of the tree as the only argument.
+|`s__v`|Value of the tree.
 |`f__l`|Takes no arguments. Returns a function taking in a callback method which is called with the left child of the tree as the only argument.
 |`f__r`|Takes no arguments. Returns a function taking a callback  as an argument method which is called with the right child of the tree as the only argument.
 |`m__c`|Takes one argument: The argument is the value to be added to the tree. If the tree has two children, nothing is done.
