@@ -14,6 +14,14 @@ Instructions end with do and should be followed by a new line. Leaving out the n
 
 A tabulator followed by a space is used to indent a block of code.
 
+#### If statements
+
+An if statement starts with the `if` keyword, followed by an expression in brackets. The expression is evaluated and then a boolean value is constructed from the result. If the boolean value is true, the code in the block is executed. The body of the if statement ends with a `do` keyword and is indented by one more level than the if keyword.
+
+#### While loops
+
+An while loop starts with the `while` keyword, followed by an expression in brackets. The expression is evaluated and then a boolean value is constructed from the result. While the boolean value is true, the code in the block is executed. The body of the while loop ends with a `do` keyword and is indented by one more level than the while keyword.
+
 ### Variables
 
 Variables in SaHuTOrEPoL are defined with a dollar sign followed by a name. The name can contain between 3 and 8 characters, however is recommended that it is less than 6 characters. The name must have exactly two underscores in it and the frist non underscore character must be a letter, which declares the variable type.
