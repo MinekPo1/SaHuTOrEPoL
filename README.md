@@ -119,8 +119,8 @@ Members:
 | Name | Description
 |:----:|:-
 |`s__v`|Value of the tree.
-|`f__l`|Takes no arguments. Returns a function taking in a callback method which is called with the left child of the tree as the only argument.
-|`f__r`|Takes no arguments. Returns a function taking a callback  as an argument method which is called with the right child of the tree as the only argument.
+|`t__l`|The left child of the tree, empty tree otherwise.
+|`t__r`|The right child of the tree, empty tree otherwise.
 |`m__c`|Takes one argument: The argument is the value to be added to the tree. If the tree has two children, nothing is done.
 |`f__f`|Takes no arguments. Returns a function taking one argument: callbacks method. The callback method is called with a boolean indicating if the tree has two children as the only argument.
 
