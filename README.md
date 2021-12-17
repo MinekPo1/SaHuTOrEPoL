@@ -38,7 +38,16 @@ Members can be accessed by writing the variable name followed by a hyphen and th
 
 Expressions can have multiple elements, separated by a dot. Each of the elements can be either a function call, a variable or a literal.
 
+#### Multi expressions
+
 If the expression has more then one expression, the type of the first element is used to determine the type of the expression. It is then constructed with the first element or the result of the previous pass if it has happened already and the last element, which was not yet used in previous passes. This is repeated until all elements are used.
+
+#### Literals
+
+- values of type `i` cannot have leading zeros, must fill the regex `^[1-9]\d*$`
+- values of type `f` cannot have leading or leaning zeros, must fill the regex `^[1-9]\d*\.[0-9]*\d$`
+- values of type `s` must be surrounded by single or double quotes
+- values of type `b` must be either `yes` or `no`
 
 ### Functions and methods
 
