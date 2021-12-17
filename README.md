@@ -10,7 +10,7 @@ Two dollar sings are used to start a line comment.
 
 ### Code structure
 
-Instructions end with do and should be followed by a new line. Leaving out the new line will result in the interpreter being less happy.
+Instructions end with do and should be followed by a new line. Leaving out the new line will result in the parser being less happy.
 
 A tabulator followed by a space is used to indent a block of code.
 
