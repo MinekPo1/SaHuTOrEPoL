@@ -30,6 +30,10 @@ Variables starting with a underscore are considered local.
 
 Setting a variables value can be done by writing the variable name followed by an expression, separated by dolar sign.
 
+#### Member access
+
+Members can be accessed by writing the variable name followed by a hyphen and the member name. This can be repeated to access members of members.
+
 ### Expressions
 
 Expressions can have multiple elements, separated by a dot. Each of the elements can be either a function call, a variable or a literal.
