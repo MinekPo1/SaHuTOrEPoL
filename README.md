@@ -64,6 +64,7 @@ Methods cannot be called in expressions.
 
 A type definition is started with the character, which the type is bound followed by the type body split by a dolar sign.
 The type body is a list of variables.
+A type definition cannot be inside a function, method or type definition.
 
 Special functions and methods are:
 
