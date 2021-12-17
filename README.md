@@ -45,9 +45,12 @@ If the expression has more then one expression, the type of the first element is
 #### Literals
 
 - values of type `i` cannot have leading zeros, must fill the regex `^[1-9]\d*$`
-- values of type `f` cannot have leading or leaning zeros, must fill the regex `^[1-9]\d*\.[0-9]*\d$`
-- values of type `s` must be surrounded by single or double quotes
+- values of type `f` cannot have leading or leaning zeros, unless it is the only digit after the decimal point, must fill the regex `^[1-9]\d*\.(\d*[1-9]|0)$`
+- values of type `s` must be surrounded by single or double quotes, which must be matching
 - values of type `b` must be either `yes` or `no`
+
+Variables can be accessed in the same way as in set instructions.
+Functions can be called in the same way as outside expressions.
 
 ### Functions and methods
 
