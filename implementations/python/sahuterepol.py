@@ -296,6 +296,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 	context: list[TypeHints.AST.Contexts] = [tree]
 	p_do = False
 	e_do = False
+	new_line = True
 	while True:
 		c = next(ptr, None)
 		if p_do:
@@ -312,7 +313,9 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 
 		if c is None:
 			break
-		if symbol == "":
+		if not(new_line) and symbol == "":
+			symbol = " "
+		if new_line:
 			if c == "\t" and cur_indent % 1 == 0:
 				cur_indent += 0.5
 			elif c == " " and cur_indent % 1 == 0.5:
@@ -339,12 +342,18 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 				if cur_indent <= len(context) - 2:
 					e_do = True
 				symbol += c
+				new_line = False
 		elif c in " \t" and symbol[-1] in " \t":
 			pass
 		elif c in " \t\n":
 			symbol += " "
+			if c == "\n":
+				new_line = True
 		else:
 			symbol += c
+
+		if len(symbol) == 2 and symbol[0] == " ":
+			symbol = symbol[1]
 
 		if re.fullmatch(r" ?\$\$",symbol):
 			while c != "\n" and c is not None:
@@ -518,7 +527,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 			context.append(context[-1]['children'][-1])  # type:ignore
 			symbol = ""
 
-	if symbol != "":
+	if symbol not in ["", " "]:
 		raise SaHuTOrEPoLError(
 			f"Unexpected end of file, {symbol!r} left hanging",
 			ptr.pos
