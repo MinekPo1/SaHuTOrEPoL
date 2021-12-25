@@ -314,6 +314,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 		if c is None:
 			break
 		if not(new_line) and symbol == "":
+			c
 			symbol = " "
 		if new_line:
 			if c == "\t" and cur_indent % 1 == 0:
@@ -462,7 +463,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 				symbol = ""
 
 		if context[-1]['type'] == "root":
-			if m:=re.fullmatch(rf"({RegexBank.type_name}) ?$",symbol):
+			if m:=re.fullmatch(rf"({RegexBank.type_name}) ?\$",symbol):
 				name = m.group(1)
 				tree['type_defs'][name] = {
 					'type': 'type_def',
@@ -526,6 +527,12 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 			})
 			context.append(context[-1]['children'][-1])  # type:ignore
 			symbol = ""
+
+		if symbol.count("\"") % 2 == 0 and symbol.endswith(" do"):
+			raise SaHuTOrEPoLError(
+				f"Unrecognized symbol {symbol!r}",
+				ptr.pos
+			)
 
 	if symbol not in ["", " "]:
 		raise SaHuTOrEPoLError(
