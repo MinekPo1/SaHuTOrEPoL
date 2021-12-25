@@ -462,7 +462,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 				symbol = ""
 
 		if context[-1]['type'] == "root":
-			if m:=re.fullmatch(rf"type ?({RegexBank.type_name})",symbol):
+			if m:=re.fullmatch(rf"({RegexBank.type_name}) ?$",symbol):
 				name = m.group(1)
 				tree['type_defs'][name] = {
 					'type': 'type_def',
