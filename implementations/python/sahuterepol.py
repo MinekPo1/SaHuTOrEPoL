@@ -81,6 +81,7 @@ class RegexBank:
 	f_literal = r'[1-9]\d*\.(\d*[1-9]|0)'
 	b_literal = r'(yes|no)'
 	s_literal = r'(?P<s>[\"\'])[^\n\r]*(?P=s)'
+	do = r'do'
 
 
 def check_var_name(name:str) -> tuple[bool,Optional[str]]:
@@ -296,6 +297,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 	context: list[TypeHints.AST.Contexts] = [tree]
 	p_do = False
 	e_do = False
+	d_exp= False
 	new_line = True
 	while True:
 		c = next(ptr, None)
@@ -356,6 +358,16 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 		if len(symbol) == 2 and symbol[0] == " ":
 			symbol = symbol[1]
 
+		if d_exp and symbol == "do":
+			symbol = ""
+			d_exp = False
+			p_do = True
+		if d_exp and len(symbol) == 2:
+			raise SaHuTOrEPoLError(
+				"Do expected",
+				ptr.pos
+			)
+
 		if re.fullmatch(r" ?\$\$",symbol):
 			while c != "\n" and c is not None:
 				c = next(ptr, None)
@@ -382,7 +394,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 			continue
 
 		if context[-1]['type'] != "type_def":
-			if m:=re.fullmatch(rf"({RegexBank.variable})\$(.+)do",symbol):
+			if m:=re.fullmatch(rf"({RegexBank.variable})\$(.+)",symbol):
 				name = m.group(1)
 				args = m.group(2)
 				print(f"{symbol=} {name=} {args=}")
@@ -406,9 +418,9 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 					'pos': ptr.pos,
 				})
 				symbol = ""
-				p_do = True
+				d_exp = True
 
-			if m:=re.fullmatch(rf"({RegexBank.variable})\((.+)\) do",symbol):
+			if m:=re.fullmatch(rf"({RegexBank.variable})\((.+)\)",symbol):
 				name = m.group(1)
 				args = m.group(3)
 				v,t = check_var_name(name)
@@ -438,7 +450,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 					}
 				)
 				symbol = ""
-				p_do = True
+				d_exp = True
 
 			if m:=re.fullmatch(r'if ?\((.)\)',symbol):
 				args = m.group(1)
@@ -474,7 +486,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 				context.append(tree['type_defs'][name])
 				symbol = ""
 
-		if m:=re.fullmatch(rf"\$({RegexBank.variable}) do",symbol):
+		if m:=re.fullmatch(rf"\$({RegexBank.variable}) ",symbol):
 			name = m.group(1)
 			v,t = check_var_name(name)
 			if t is None:
@@ -495,7 +507,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 				'pos': ptr.pos,
 			})
 			symbol = ""
-			p_do = True
+			d_exp = True
 
 		if m:=re.fullmatch(rf"\$({RegexBank.variable}) ?\((.+)\)",symbol):
 			name = m.group(1)
