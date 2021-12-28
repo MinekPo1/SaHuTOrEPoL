@@ -9,6 +9,7 @@ import sys
 
 
 T = TypeVar('T','Type','i')
+TRet = TypeVar('TRet', 'LType[Type]', 'None')
 
 
 def check_compatability():
@@ -42,18 +43,20 @@ class NamespaceContext(object):
 				for k in keys[1:]:
 					obj = getattr(obj,k)
 				return obj
-			if key[0] == "_" or key in self._vars:
-				# variables starting with _ are local
-				# sometimes variables not starting with _ are local
-				# there for the check
 
-				if key in self._vars:
-					return self._vars[key]
+			if key in self._g_vars:
+				return self._g_vars[key]
 
-				if self.namespace.previous is not None:
-					return self.namespace.previous.vars[key]
-			# variables starting with a letter are global
-			return self._g_vars[key]
+			if key in self._vars:
+				return self._vars[key]
+
+			p = self.namespace
+			while p.previous is not None:
+				p = p.previous
+				if key in p.vars._vars:
+					return p.vars._vars[key]
+
+			raise KeyError(f"variable {key} not in namespace")
 
 		def __setitem__(self,key:str,value:"TypeLike") -> None:
 			if key[0] == "_":
@@ -63,10 +66,18 @@ class NamespaceContext(object):
 			self._g_vars[key] = value
 
 		def __contains__(self,key:str) -> bool:
-			if key in self._vars:
-				return True
 			if key in self._g_vars:
 				return True
+
+			if key in self._vars:
+				return True
+
+			p = self.namespace
+			while p.previous is not None:
+				p = p.previous
+				if key in p.vars._vars:
+					return True
+
 			return False
 
 	class Types(object):
@@ -93,13 +104,20 @@ class NamespaceContext(object):
 			self._types[key] = value
 
 		def __contains__(self,key:str) -> bool:
-			return key in self._types
+			if key in self._types:
+				return True
+			if not(self.namespace.is_builtin):
+				return key in builtin_namespace.types._types
+			return False
 
 	def __init__(self) -> None:
 		self.local_ref = sys._getframe(1).f_locals
 
 	def __enter__(self) -> 'NamespaceContext':
-		self.previous = self.local_ref.get('namespace_context',None)
+		if not(self.is_builtin):
+			self.previous = self.get_current_context()
+		else:
+			self.previous = None
 		self.vars = self.Vars(self)
 		self.types = self.Types(self)
 		self.local_ref['namespace_context'] = self
@@ -204,10 +222,14 @@ class MethodOrFunction(ABC, Generic[ReturnType]):
 		...
 
 
-class BoundMethodOrFunction(MethodOrFunction, Generic[WarpedMethodOrFunction]):
+class BoundMethodOrFunction(
+		MethodOrFunction,
+		Generic[WarpedMethodOrFunction, ReturnType]
+	):
 	wrapped: "Optional[WarpedMethodOrFunction]"
 	obj: "TypeLike"
 	alias_type = None
+	return_type: "LType[ReturnType]"
 
 	def __init__(self,obj,wrapped:WarpedMethodOrFunction = None) -> None:
 		self.obj = obj
@@ -217,25 +239,30 @@ class BoundMethodOrFunction(MethodOrFunction, Generic[WarpedMethodOrFunction]):
 			self.__qualname__ = wrapped.__qualname__
 			self.__doc__ = wrapped.__doc__
 			self.arg_types = wrapped.arg_types
+			self.return_type = wrapped.return_type
 
 	@overload
-	def __call__(self, *args: "TypeLike | ConvType") -> "Type | None":
+	def __call__(self, *args: "TypeLike | ConvType") -> ReturnType:
 		...
 
 	@overload
 	def __call__(self, wrapped: WarpedMethodOrFunction)\
-			-> "BoundMethodOrFunction[WarpedMethodOrFunction]":
+			-> "BoundMethodOrFunction[WarpedMethodOrFunction,TRet]":
 		...
 
-	def __call__(self, *args) -> Any:
+	def __call__(self, *args):
 		if self.wrapped is None:
 			self.__name__ = args[0].__name__
 			self.__qualname__ = args[0].__qualname__
 			self.__doc__ = args[0].__doc__
 			self.wrapped = args[0]
 			self.arg_types = args[0].arg_types
+			self.return_type = args[0].return_type
 			return self
 		return self.wrapped(self.obj,*args)
+
+	def __repr__(self) -> str:
+		return f"<BoundMethodOrFunction {self.__qualname__} of {self.obj!r}>"
 
 
 class BuiltinMethodOrFunction(MethodOrFunction):
@@ -311,13 +338,16 @@ class BuiltinFunction(BuiltinMethodOrFunction,type_n="f"):
 			raise ValueError(f"{wrapped.__name__!r} is not a valid function name")
 		try:
 			t = context.types[t]
-			self.return_type = t
+			self.return_type = TypeReference(t)
 		except KeyError:
 			raise ValueError(f"Type {t!r} could not be found.")
 
 	def __call__(self,*args) -> "TypeLike":
 		if len(args) > len(self.arg_types):
-			raise ValueError("Incorrect number of arguments")
+			raise ValueError(
+				f"Incorrect number of arguments, expected {len(self.arg_types)}, "
+				f"got {len(args)}"
+			)
 		nargs = list(args)
 		for i,(a,r) in enumerate(zip(args,self.arg_types)):
 			t = r.ref if isinstance(r,TypeReference) else r
@@ -328,13 +358,13 @@ class BuiltinFunction(BuiltinMethodOrFunction,type_n="f"):
 
 		ret = self.wrapped(*nargs)
 
-		if not(isinstance(ret,self.return_type)):
-			al_type = self.return_type.alias_type
+		if not(isinstance(ret,self.return_type.ref)):
+			al_type = self.return_type.ref.alias_type
 			if al_type is None:
 				return self.return_type(ret)
 			if isinstance(ret,al_type):
 				return ret
-			return self.return_type(ret)
+			return self.return_type.ref(ret)
 
 		return ret
 
@@ -535,9 +565,9 @@ class s(Type):
 		return f__f
 
 	@builtin_function
-	def f__s(self,i__s: 'i',i__e: 'i') -> 'any_f':
+	def f__m(self,i__s: 'i',i__e: 'i') -> 'any_f':
 		@builtin_function
-		def f__f(self,f__f: 'any_f') -> 'any_f':
+		def f__f(f__f: 'any_f') -> 'any_f':
 			f__f(self.value[i__s.value:i__e.value])
 			return f()
 
@@ -658,9 +688,11 @@ class S(Type):
 
 	@builtin_function
 	def f__r(self) -> 'any_f':
+		v = self.in_.readline()
+
 		@builtin_function
 		def f__f(f__f: 'any_f') -> 'any_f':
-			self.in_.read()
+			f__f(v)
 			return f()
 
 		return f__f
@@ -769,21 +801,19 @@ class RuntimeMethodOrFunction(MethodOrFunction):
 				if t is None:
 					raise ValueError(f"Invalid argument name: {i=}")
 				self.arg_types.append(TypeReference(context.types[t]))
+				self.args.append(i)
 
 	def __call__(
 			self, *args, namespace_hook: Callable[[NamespaceContext],None] = None
 		) -> None:
-		context: 'NamespaceContext'
-		if TYPE_CHECKING:
-			context = NamespaceContext()
-		with NamespaceContext():
+		with NamespaceContext() as context:
 			for r,n,v in zip(self.arg_types,self.args,args):
 				t = r.ref if isinstance(r,TypeReference) else r
 				if t == "self":
 					raise RuntimeError
 				if isinstance(t,_FutureType):
 					raise ValueError(f"type {t=} is not yet defined.")
-				context.vars._vars[n] = t.cast(v,t)
+				context.vars._vars[n] = t.convert(v,t)
 
 			if namespace_hook is not None:
 				namespace_hook(context)
@@ -791,12 +821,12 @@ class RuntimeMethodOrFunction(MethodOrFunction):
 			self.inner.run()
 
 
-class f(Type, RuntimeMethodOrFunction):
+class f(RuntimeMethodOrFunction, Type):
 	alias_type = BuiltinFunction
 	return_type: 'LType[f]'
 
 	def __init__(self, inner=None, args:list[str] = None) -> None:
-		super().__init__(inner, args)
+		super().__init__(inner, args)  # type:ignore
 		self.return_type = f
 
 	def __call__(self, *args) -> 'f':
@@ -831,7 +861,7 @@ class f(Type, RuntimeMethodOrFunction):
 			raise TypeError(f"Cannot cast {value!r} to {cls!r}")
 
 
-class m(Type, RuntimeMethodOrFunction):
+class m(RuntimeMethodOrFunction, Type):
 	alias_type = BuiltinMethod
 
 	@overload
@@ -843,7 +873,7 @@ class m(Type, RuntimeMethodOrFunction):
 		...
 
 	def __init__(self, inner=None, args:list[str] = None) -> None:
-		super().__init__(inner, args)
+		super().__init__(inner, args)  # type:ignore
 		self.return_type = None
 
 	@classmethod

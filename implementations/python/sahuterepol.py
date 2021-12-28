@@ -77,7 +77,7 @@ class RegexBank:
 	variable_name = r'[a-zA-Z_]+'
 	variable = rf'{variable_name}(-{variable_name})*'
 	type_name = r'[a-zA-Z]'
-	i_literal = r'[1-9]\d*'
+	i_literal = r'-?([1-9]\d*|0)'
 	f_literal = r'[1-9]\d*\.(\d*[1-9]|0)'
 	b_literal = r'(yes|no)'
 	s_literal = r'(?P<s>[\"\'])[^\n\r]*(?P=s)'
@@ -102,9 +102,9 @@ def check_var_name(name:str) -> tuple[bool,Optional[str]]:
 
 
 class Code(object):
-	ast: TypeHints.AST.Root
+	ast: TypeHints.AST.Contexts
 
-	def __init__(self,ast: TypeHints.AST.Root) -> None:
+	def __init__(self,ast: TypeHints.AST.Contexts) -> None:
 		self.ast = ast
 
 	def resolve_expr(self,expr: TypeHints.AST.Expresion) -> Types.TypeLike:
@@ -124,8 +124,20 @@ class Code(object):
 			case {"type":"function_call", "name": name, "args": list(args)}:
 				args = [self.resolve_expr(i) for i in args]
 				f = context.vars[name]
-				if not isinstance(f,(Types.f,Types.BuiltinFunction)):
-					raise SaHuTOrEPoLError(f"{name} is not a function",expr['pos'])
+				if not isinstance(
+						f,
+						(Types.f,Types.BuiltinFunction,Types.BoundMethodOrFunction)
+					):
+					raise SaHuTOrEPoLError(
+						f"{name} is not a function (is of type {type(f)})",
+						expr['pos']
+					)
+				if isinstance(f,Types.BoundMethodOrFunction):
+					if f.return_type is None:
+						raise SaHuTOrEPoLError(
+							f"{name} is not a function (is of type {type(f)})",
+							expr['pos']
+						)
 				return f(*args)
 			case _:
 				raise SaHuTOrEPoLError(f"Unknown expression type {expr}", expr['pos'])
@@ -157,9 +169,9 @@ class Code(object):
 							i['pos']
 						)
 					if t == "f":
-						context.vars[name] = Types.f(children,args)
+						context.vars[name] = Types.f(Code(i),args)
 					else:
-						context.vars[name] = Types.m(children,args)
+						context.vars[name] = Types.m(Code(i),args)
 				case {"type": "method_call", "name": name, "args": list(args)}:
 					v,t = check_var_name(name)
 					if t is None:
@@ -171,7 +183,12 @@ class Code(object):
 					) and not(callable(f)):
 						raise SaHuTOrEPoLError(f"{f!r} is not callable",i['pos'])
 					args = [self.resolve_expr(i) for i in args]
-					f(*args)
+					try:
+						f(*args)
+					except SaHuTOrEPoLError as e:
+						raise e
+					except Exception as e:
+						raise SaHuTOrEPoLError(f"{e}",i['pos'])
 				case {"type": "while", "condition": condition, "children": children}:
 					while self.resolve_expr(condition):
 						self._run(children)
@@ -190,8 +207,10 @@ class Code(object):
 
 
 def parse_expr(expr:str,pos: tuple[int,int]) -> TypeHints.AST.Expresion:
+	expr = expr.strip(" \t")
 	# remove unesery brackets
-	expr = expr.strip(" \t()")
+	while expr.startswith("(") and expr.endswith(")"):
+		expr = expr[1:-1]
 	if "." in expr:
 		split_expr: list[str] = [""]
 		brackets: int = 0
@@ -218,11 +237,18 @@ def parse_expr(expr:str,pos: tuple[int,int]) -> TypeHints.AST.Expresion:
 			'name': expr,
 			'pos': pos
 		}
-	if m:=re.fullmatch(rf"({RegexBank.variable})\((.)\)",expr):
+	if m:=re.fullmatch(rf"({RegexBank.variable})\((.*)\)",expr):
+		if m.group(3):
+			return {
+				'type': 'function_call',
+				'name': m.group(1),
+				'args': [parse_expr(i,pos) for i in m.group(3).split(",")],
+				'pos': pos
+			}
 		return {
 			'type': 'function_call',
 			'name': m.group(1),
-			'args': [parse_expr(m.group(3),pos)],
+			'args': [],
 			'pos': pos
 		}
 	if re.fullmatch(RegexBank.i_literal,expr):
@@ -248,7 +274,7 @@ def parse_expr(expr:str,pos: tuple[int,int]) -> TypeHints.AST.Expresion:
 			'type': 'literal_expression',
 			'value': {
 				'type': 's',
-				'value':expr[1:-1],
+				'value':expr[1:-1].encode('raw_unicode_escape').decode('unicode_escape'),
 			},
 			'pos': pos
 		}
@@ -261,7 +287,7 @@ def parse_expr(expr:str,pos: tuple[int,int]) -> TypeHints.AST.Expresion:
 			},
 			'pos': pos
 		}
-	raise SaHuTOrEPoLError(f"Invalid expression: {expr}",pos)
+	raise SaHuTOrEPoLError(f"Invalid expression: {expr!r}",pos)
 
 
 happyness_warning_messages = {
@@ -344,6 +370,7 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 					)
 				if cur_indent <= len(context) - 2:
 					e_do = True
+				cur_indent = 0
 				symbol += c
 				new_line = False
 		elif c in " \t" and symbol[-1] in " \t":
@@ -354,6 +381,14 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 				new_line = True
 		else:
 			symbol += c
+
+		if symbol.count("\"") % 2 == 1:
+			if c == "\n":
+				raise SaHuTOrEPoLError(
+					"Unclosed string literal",
+					ptr.pos
+				)
+			continue
 
 		if len(symbol) == 2 and symbol[0] == " ":
 			symbol = symbol[1]
@@ -394,10 +429,9 @@ def parse(code:str) -> TypeHints.AST.Root:  # sourcery no-metrics
 			continue
 
 		if context[-1]['type'] != "type_def":
-			if m:=re.fullmatch(rf"({RegexBank.variable})\$(.+)",symbol):
+			if m:=re.fullmatch(rf"({RegexBank.variable})\$(.+) ",symbol):
 				name = m.group(1)
-				args = m.group(2)
-				print(f"{symbol=} {name=} {args=}")
+				args = m.group(3)
 				v,t = check_var_name(name)
 				if t is None:
 					raise SaHuTOrEPoLError(
@@ -564,7 +598,7 @@ def show_error_or_warning(error: SaHuTOrEPoLError | SaHuTOrEPoLWarning,
 		lines = f.readlines()
 		print(
 			f"{'Error' if isinstance(error,SaHuTOrEPoLError) else 'Warning'}: "
-			f"{error.message} at {error.pos}"
+			f"{error.message}"
 		)
 		try:
 			print(f"{error.pos[0]: >3}|{lines[error.pos[0]-1][:-1]}")
@@ -755,6 +789,7 @@ def main(*args):
 				with catch_warnings(record=True) as w:
 					try:
 						t = parse(f.read())
+						Code(t).run()
 					except SaHuTOrEPoLError as ex:
 						if "r" in options:
 							raise ex
@@ -773,7 +808,6 @@ def main(*args):
 					sys.exit(1)
 				if t is None:
 					raise RuntimeError
-				Code(t).run()
 
 
 if __name__ == "__main__":
