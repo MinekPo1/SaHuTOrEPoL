@@ -1,0 +1,17 @@
+$S__ do
+$$this is a comment
+$$yay
+$f__c(s__n)
+	 $_s_t do
+	 _s_t$"Hello "."!".s__n do
+	 S__-m__w(_s_t) do
+do
+$f__s(s__n)
+	 $f__r do
+	 f__r$s__n-f__m(0,-1) do
+	 f__r(f__c) do
+do
+S__-m__w("Whats is your name?\n") do
+$f__r do
+f__r$S__-f__r() do
+f__r(f__s) do
