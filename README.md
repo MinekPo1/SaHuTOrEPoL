@@ -128,7 +128,7 @@ Members:
 
 ### `q` - Queue of integers
 
-Behaviour with two arguments: If the first is a queue, create a new queue with the second as the first element, otherwise create a queue with the first as the first element and the second as the second element.
+Behaviour with two arguments: Create a new queue with the second as the first element.
 
 Members:
 | Name | Description
@@ -164,3 +164,13 @@ Cannot be constructed. When attempted to construct a function with no parameters
 While defining a variable of type `m` the method can be defined, by placing the arguments (if any) in brackets after the variable name followed by the body. The body may extend over multiple lines, but must be placed into a new layer of indentation. The `do` keyword is used to end the function definition.
 
 Has no members.
+
+## Conversion
+
+`s` -> `i`: Treat the string as an byte array and convert it to an integer.
+`i` -> `s`: Convert the integer to a string.
+`n` -> `i`: Round the number to an integer.
+`n` -> `s`: Convert the number to a string.
+`s` -> `q`: Treat each character of the string as an integer and place them in a queue, first the even indexes left to right, then the odd indexes right to left.
+`i` -> `q`: Create a queue with the integer as the first and only element.
+`q` -> `i`: Return the first element of the queue.
