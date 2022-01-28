@@ -1,10 +1,21 @@
 $S__ do
 
-$f__ca(s__i)
-	 if(b(i(s__i),on))
-	 	 while(on)
-	 	 	S__-m__w("0") do
-	 	 do
+$f__ca(s__a)
+	 $i__a do
+	 i__a$s__a do
+	 S__-m__w(0.i__a) do
+	 while(-48.s__a)
+	 	 S__-m__w("1") do
 	 do
-	 S__-m__w("1") do
+	 S__-m__w("0") do
 do
+
+$f__cb(s__b)
+	 $f__r do
+	 f__r$s__b-f__i(0) do
+	 f__r(f__ca) do
+do
+
+$f__r do
+f__r$S__-f__r() do
+f__r(f__cb) do
