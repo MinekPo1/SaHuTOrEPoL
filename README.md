@@ -73,6 +73,14 @@ Special functions and methods are:
 - `__mm`: Called when the type is constructed with two arguments.
 - `_f_X`: Called to convert a value of the type to a value of the type X. Should take a single argument, being the value to convert and the returned function should take a single argument, a callback method which should be called with the converted value.
 
+### taking from a library
+
+To take a variable or defined type from a library, first the dollar sign is used followed by the taken variable or defined type name, followed by the library name speared by another dollar sign.
+First the library is searched for in the library path(s), then in the current directory.
+Library names may not contain whitespace or hyphens, which are used as separators.
+The implementation may be specified in the library file name, by adding a dot and the implementation name after the library name.
+Folders which are specified in the library paths may, but don't have to be, specified before the library name.
+
 ## Bult-in types
 
 ### `s` - String
