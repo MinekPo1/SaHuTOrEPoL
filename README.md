@@ -80,6 +80,7 @@ First the library is searched for in the library path(s), then in the current di
 Library names may not contain whitespace or hyphens, which are used as separators.
 The implementation may be specified in the library file name, by adding a dot and the implementation name after the library name.
 Folders which are specified in the library paths may, but don't have to be, specified before the library name.
+Library path may be stored in the `SaHPath` system variable separated by a colon.
 
 ## Bult-in types
 

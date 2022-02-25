@@ -1,0 +1,117 @@
+$$ check if a number is larger than 0, with an upper bound
+$f__gz(i__n,i__up)
+	 $i__np do
+	 $f__cb(i__n)
+	 	 i__np$i__n do
+	 do
+	 $__f do
+	 __f$i__up-f__i() do
+	 __f(f__cb) do
+	 $__fr(f__ic)
+	 	 f__ic(no) do
+	 do
+	 __mr(__fr) do
+	 while(i__up)
+	 	 if(b(i__n.i__np,yes))
+	 	 	 i__up$0 do
+	 	 	 $__fr(f__ic)
+	 	 	 	 f__ic(yes) do
+	 	 	 do
+	 	 	 __mr(__fr) do
+	 	 do
+	 	 if(i__n.i__np)
+	 	 	 i__up$i__up.-1 do
+	 	 	 i__np$i__np.1 do
+	 	 do
+	 do
+do
+
+$$mod
+$f__m(i__a, i__b)
+	 S__-m__w("  :"."\n".i__b." ".i__a) do
+	 $$negate i__b
+	 $i__bg do
+	 $f__cb(i__n)
+	 	 i__b$i__n do
+	 do
+	 $__f do
+	 __f$i__b-f__i() do
+	 __f(f__cb) do
+	 $$while _i_ai is grater than 0 suptract i__b from it
+	 $$_i_ai is initialy set to i__a
+	 $_i_ai do
+	 _i_ai$i__a do
+	 $b__d do
+	 $f__ca(b__g)
+	 	 b__d$b__g.yes do
+	 do
+	 __f$f__gz(_i_ai,i__a) do
+	 __f(f__ca) do
+	 while(b__d)
+	 	 S__-m__w("   "."\n"._i_ai) do
+	 	 _i_ai$i__bg._i_ai do
+	 	 __f$f__gz(_i_ai,i__a) do
+	 	 __f(f__ca) do
+	 	 b__d$yes.b__d._i_ai do
+	 do
+	 $$subtract _i_ai from i__b geting the result
+	 $$first negate _i_ai
+	 $i__ab do
+	 $f__cc(i__n)
+	 	 i__a$i__n do
+	 do
+	 __f$_i_ai-f__i() do
+	 __f(f__cc) do
+
+	 $__fr(f__cb)
+	 	 f__cb(_i_ai) do
+	 do
+	 __mr(__fr) do
+do
+
+$f__cp(i__n)
+	 $i__ do
+	 $$using sqrt of i__n instead of i__n.-1 would be more efficient
+	 i__$i__n.-1 do
+
+	 $__fr(f__cb)
+	 	 f__cb(0) do
+	 do
+	 __mr(__fr) do
+	 $f__cb(i__n)
+	 	 if(i__n)
+	 	 	 S__-m__w("---") do
+	 	 	 i__$1 do
+	 	 	 $__fr(f__cb)
+	 	 	 	 f__cb(yes) do
+	 	 	 do
+	 	 	 __mr(__fr) do
+	 	 do
+	 do
+	 $__f do
+	 while(i__.-1)
+	 	 S__-m__w("."."\n".i__n." ".i__) do
+	 	 __f$f__m(i__n,i__) do
+	 	 __f(f__cb) do
+	 	 i__$i__.-1 do
+	 do
+do
+
+$i__i do
+i__i$3 do
+$S__ do
+
+$f__cd(b__)
+	 if(b__)
+	 	 S__-m__w(i__i) do
+	 do
+do
+
+$__f do
+
+while(i__i.-10)
+	 S__-m__w(s(i__i,"\n")) do
+	 __f$f__cp(i__i) do
+	 __f(f__cd) do
+	 i__i$i__i.1 do
+do
