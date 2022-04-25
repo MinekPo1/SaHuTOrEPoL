@@ -177,9 +177,15 @@ Has no members.
 ## Conversion
 
 `s` -> `i`: Treat the string as an byte array and convert it to an integer.
+
 `i` -> `s`: Convert the integer to a string.
+
 `n` -> `i`: Round the number to an integer.
+
 `n` -> `s`: Convert the number to a string.
+
 `s` -> `q`: Treat each character of the string as an integer and place them in a queue, first the even indexes left to right, then the odd indexes right to left.
+
 `i` -> `q`: Create a queue with the integer as the first and only element.
+
 `q` -> `i`: Return the first element of the queue.
