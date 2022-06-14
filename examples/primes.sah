@@ -1,5 +1,5 @@
 $$ check if a number is larger than 0, with an upper bound
-$f__gz(i__n,i__up)
+$f__gz(i__n, i__up)
 	 $i__np do
 	 $f__cb(i__n)
 	 	 i__np$i__n do
@@ -45,12 +45,12 @@ $f__m(i__a, i__b)
 	 $f__ca(b__g)
 	 	 b__d$b__g.yes do
 	 do
-	 __f$f__gz(_i_ai,i__a) do
+	 $$  __f$f__gz(_i_ai, i__a) do
 	 __f(f__ca) do
 	 while(b__d)
 	 	 S__-m__w("   "."\n"._i_ai) do
 	 	 _i_ai$i__bg._i_ai do
-	 	 __f$f__gz(_i_ai,i__a) do
+	 	 $$  __f$f__gz(_i_ai, i__a) do
 	 	 __f(f__ca) do
 	 	 b__d$yes.b__d._i_ai do
 	 do

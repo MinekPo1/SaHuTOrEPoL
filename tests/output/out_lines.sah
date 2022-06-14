@@ -1,0 +1,5 @@
+$S__ do
+S__-m__w("this is a line\n") do
+S__-m__w("this is also a line\n") do
+S__-m__w("yes this is also a line\n") do
+S__-m__w("ThIs liNE hAs bOTh cAPPitAl aND liTTlE LeTteRS\n") do

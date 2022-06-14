@@ -1,0 +1,11 @@
+$S__ do
+S__-m__w("a") do
+S__-m__w("b") do
+S__-m__w("x") do
+S__-m__w("2") do
+S__-m__w("@") do
+S__-m__w("-") do
+S__-m__w("!") do
+S__-m__w("=") do
+S__-m__w("&") do
+S__-m__w("$") do

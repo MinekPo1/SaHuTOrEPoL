@@ -45,7 +45,7 @@ If the expression has more then one expression, the type of the first element is
 #### Literals
 
 - values of type `i` cannot have leading zeros, must fill the regex `^[1-9]\d*$`
-- values of type `n` cannot have leading or leaning zeros, unless it is the only digit after the decimal point, must fill the regex `^[1-9]\d*,(\d*[1-9]|0)$`
+- values of type `n` cannot have leading or leaning zeros, unless it is the only digit after the decimal point, must fill the regex `^-?([1-9]\d*|0),(\d*[1-9]|0)$`
 - values of type `s` must be surrounded by single or double quotes, which must be matching
 - values of type `b` must be either `yes` or `no`
 
@@ -54,7 +54,7 @@ Functions can be called in the same way as outside expressions.
 
 ### Functions and methods
 
-Methods and functions can be called by following the function or method name by brackets, within which the arguments are specified. If the argument if of a different type than it should be, it is converted. If an argument is missing, it is constructed with no arguments being passed to the constructor.
+Methods and functions can be called by following the function or method name by brackets, within which the arguments are specified, separated by pipe characters. If the argument if of a different type than it should be, it is converted. If an argument is missing, it is constructed with no arguments being passed to the constructor.
 
 If a function or method is called outside of an expression it must be followed by do, as any other instruction.
 
