@@ -6,7 +6,7 @@ $f__c(s__n)
 do
 $f__s(s__n)
 	 $f__r do
-	 f__r$s__n-f__m(0,-1) do
+	 f__r$s__n-f__m(0 | -1) do
 	 f__r(f__c) do
 do
 S__-m__w("Whats is your name?\n") do

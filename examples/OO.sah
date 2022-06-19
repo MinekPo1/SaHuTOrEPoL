@@ -2,7 +2,7 @@ l$
 	 $l__n do
 	 $i__v do
 	 $$ get value nth next value
-	 $f__i(l__s, i__n)
+	 $f__i(l__s | i__n)
 	 	 $l__c do
 	 	 l__c$l__s do
 	 	 while(i__n)

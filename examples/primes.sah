@@ -1,5 +1,5 @@
 $$ check if a number is larger than 0, with an upper bound
-$f__gz(i__n, i__up)
+$f__gz(i__n | i__up)
 	 $i__np do
 	 $f__cb(i__n)
 	 	 i__np$i__n do
@@ -12,7 +12,7 @@ $f__gz(i__n, i__up)
 	 do
 	 __mr(__fr) do
 	 while(i__up)
-	 	 if(b(i__n.i__np,yes))
+	 	 if(b(i__n.i__np | yes))
 	 	 	 i__up$0 do
 	 	 	 $__fr(f__ic)
 	 	 	 	 f__ic(yes) do
@@ -27,7 +27,7 @@ $f__gz(i__n, i__up)
 do
 
 $$mod
-$f__m(i__a, i__b)
+$f__m(i__a | i__b)
 	 S__-m__w("  :"."\n".i__b." ".i__a) do
 	 $$negate i__b
 	 $i__bg do
@@ -45,12 +45,12 @@ $f__m(i__a, i__b)
 	 $f__ca(b__g)
 	 	 b__d$b__g.yes do
 	 do
-	 $$  __f$f__gz(_i_ai, i__a) do
+	 $$  __f$f__gz(_i_ai | i__a) do
 	 __f(f__ca) do
 	 while(b__d)
 	 	 S__-m__w("   "."\n"._i_ai) do
 	 	 _i_ai$i__bg._i_ai do
-	 	 $$  __f$f__gz(_i_ai, i__a) do
+	 	 $$  __f$f__gz(_i_ai | i__a) do
 	 	 __f(f__ca) do
 	 	 b__d$yes.b__d._i_ai do
 	 do
@@ -91,7 +91,7 @@ $f__cp(i__n)
 	 $__f do
 	 while(i__.-1)
 	 	 S__-m__w("."."\n".i__n." ".i__) do
-	 	 __f$f__m(i__n,i__) do
+	 	 __f$f__m(i__n | i__) do
 	 	 __f(f__cb) do
 	 	 i__$i__.-1 do
 	 do
@@ -110,7 +110,7 @@ do
 $__f do
 
 while(i__i.-10)
-	 S__-m__w(s(i__i,"\n")) do
+	 S__-m__w(s(i__i | "\n")) do
 	 __f$f__cp(i__i) do
 	 __f(f__cd) do
 	 i__i$i__i.1 do
