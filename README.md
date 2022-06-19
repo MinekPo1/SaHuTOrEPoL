@@ -60,6 +60,8 @@ If a function or method is called outside of an expression it must be followed b
 
 Methods cannot be called in expressions.
 
+A common practise it for a function to return a function which takes a method as an argument. This is called fishing.
+
 ### Defined Types
 
 A type definition is started with the character, which the type is bound followed by the type body split by a dolar sign.
@@ -82,6 +84,8 @@ The implementation may be specified in the library file name, by adding a dot an
 Folders which are specified in the library paths may, but don't have to be, specified before the library name.
 Library path may be stored in the `SaHPath` system variable separated by a colon.
 
+See [std specification](STDSpec.md) for information on standard libraries.
+
 ## Bult-in types
 
 ### `s` - String
@@ -91,8 +95,8 @@ Behaviour with two arguments: Convert the two inputs to strings and concatenate 
 Members:
 | Name | Description
 |:----:|:-----------
-|`f__i`|Takes one argument: The index. Returns a function taking the in a callbacks method which is called with the character in that index as argument.
-|`f__s`|Takes two arguments: The first argument is the start index, the second is the end index. Returns a function taking the in a callbacks method which is called with the index and the string  in that index as arguments.
+|`f__i`|Takes one argument: The index. Fishes the character in that index.
+|`f__s`|Takes two arguments: The first argument is the start index, the second is the end index. Fishes the index and the string in that index.
 
 ### `i` - Integer
 
@@ -101,7 +105,7 @@ Behaviour with two arguments: Convert the two inputs to integers and add the res
 Members:
 | Name | Description
 |:----:|:-----------
-|`f__i`|Takes no arguments. Returns a function taking one argument of type `m` and calling it with the integer inverted as argument.
+|`f__i`|Takes no arguments. Fishes the integer inverted.
 
 ### `n` - Number
 
@@ -110,7 +114,7 @@ Behaviour with two arguments: Convert the two inputs to numbers and add the resu
 Members:
 | Name | Description
 |:----:|:-
-|`f__i`|Takes no arguments. Returns a function taking one argument: callbacks method. The callback method is called with the number inverted as argument.
+|`f__i`|Takes no arguments. Fishes the number inverted.
 
 ### `b` - Boolean
 
@@ -119,7 +123,7 @@ Behaviour with two arguments: XOR the truthiness of the two inputs
 Members:
 | Name | Description
 |:----:|:-
-|`f__i`|Takes no arguments, returns a function taking in a callback method which is called with the boolean inverted as argument.
+|`f__i`|Takes no arguments, fishes the boolean inverted.
 
 ### `S` - Stream
 
@@ -133,7 +137,7 @@ Members:
 | Name | Description
 |:----:|:-
 |`m__w`|Takes one argument: The string to write.
-|`f__r`|Takes no arguments, returns a function taking in a callback method which is called with the string read from the stream as argument.
+|`f__r`|Takes no arguments, fishes the string read from the stream.
 
 ### `q` - Queue of integers
 
@@ -142,8 +146,8 @@ Behaviour with two arguments: Create a new queue with the second as the first el
 Members:
 | Name | Description
 |:----:|:-
-|`f__p`|Takes no arguments. Returns a function taking one argument, which is a method which is called with the front element of the queue as argument. The element is removed from the queue.
-|`m__a`|Takes one argument: The argument is the value to be added to the queue.
+|`f__p`|Takes no arguments. Fishes the front element of the queue. The element is removed from the queue.
+|`m__a`|Takes one argument: the value to be added to the queue.
 
 ### `t` - Tree of strings
 
@@ -155,8 +159,8 @@ Members:
 |`s__v`|Value of the tree.
 |`t__l`|The left child of the tree, empty tree otherwise.
 |`t__r`|The right child of the tree, empty tree otherwise.
-|`m__c`|Takes one argument: The argument is the value to be added to the tree. If the tree has two children, nothing is done.
-|`f__f`|Takes no arguments. Returns a function taking one argument: callbacks method. The callback method is called with a boolean indicating if the tree has two children as the only argument.
+|`m__c`|Takes one argument: the value to be added to the tree. If the tree has two children, nothing is done.
+|`f__f`|Takes no arguments. Fishes a boolean indicating if the tree has two children.
 
 ### `f` - Function
 
